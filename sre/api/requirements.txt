@@ -6,3 +6,7 @@ python-magic==0.4.27
 
 # For fastapi unit testing
 httpx==0.27.0
+
+# Prometheus metrics endpoint
+# Note: Not using official one due to a bug https://github.com/prometheus/client_python/issues/1016
+prometheus-fastapi-instrumentator==1.1.1

@@ -1,10 +1,14 @@
 import logging
 from fastapi import FastAPI, Response, HTTPException, status
+from prometheus_fastapi_instrumentator import Instrumentator
 from enum import Enum
 import magic
 import requests
 
 app = FastAPI()
+
+# Prometheus instrumentator to enable /metrics endpoint
+Instrumentator().instrument(app).expose(app)
 
 
 class EndpointLogFilter(logging.Filter):
