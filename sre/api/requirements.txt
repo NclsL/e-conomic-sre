@@ -1,0 +1,8 @@
+fastapi==0.111.1
+requests==2.32.3
+
+# Figure out the filetype of a file
+python-magic==0.4.27
+
+# For fastapi unit testing
+httpx==0.27.0
