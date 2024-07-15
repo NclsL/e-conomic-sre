@@ -17,6 +17,7 @@ class EndpointLogFilter(logging.Filter):
 
 
 logging.getLogger("uvicorn.access").addFilter(EndpointLogFilter())
+logging.basicConfig(level=logging.INFO)  # Hide logging below debug
 
 
 class AllowedMimeTypes(str, Enum):
@@ -43,11 +44,13 @@ async def file(number: int) -> Response:
     request = requests.get("http://localhost:3000")
 
     if request.status_code != status.HTTP_200_OK:
+        logging.error(f"Couldn't parse {request}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Unable to fetch file from external service")
 
     filetype = magic.from_buffer(request.content, mime=True)
 
     if filetype != AllowedMimeTypes.png and filetype != AllowedMimeTypes.pdf:
+        logging.error(f"Couldn't figure filetype of {request}")
         raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Unable to determine filetype of the file fetched from an external service")
 
     headers = {}
