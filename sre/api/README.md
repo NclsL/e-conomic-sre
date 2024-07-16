@@ -18,3 +18,4 @@ Install (mini)conda
 `pytest ./app`
 
 ### Deployment
+- Commit to sre/api folder master branch
