@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
     bucket = "e-conomic-hiring-assignment-tf-state"
-    prefix = "prod"
+    prefix = "production"
   }
 }
 
