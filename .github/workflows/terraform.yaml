@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - sre/iac/**
+      - .github/workflows/terraform.yaml
 
 jobs:
   terraform:
