@@ -8,12 +8,14 @@
     - https://console.cloud.google.com/flows/enableapi?apiid=container.googleapis.com
   - Enable billing
     - `gcloud beta billing projects describe project-name`
-  - `gcloud auth application-default login`
 
 #### Development
+- `gcloud auth application-default login`
+- `terraform init`
+- `terraform plan -input=false -var-file=./cicd.tfvars`
+- `terraform apply -input=false -var-file=./cicd.tfvars`
 
-#### Dockerize
+But use CICD when possible
 
-#### Test
-
-### Deployment
+#### Deployment
+- Commit to sre/iac folder master branch, GitHub Actions will deploy it
