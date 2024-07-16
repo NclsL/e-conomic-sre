@@ -1,0 +1,48 @@
+name: CICD
+
+on:
+  push:
+    paths:
+      - sre/api/**
+
+env:
+  PROJECT_ID: ${{}}
+
+jobs:
+  cicd:
+    runs-on: ubuntu-24.04
+    name: Unit tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r sre/api/requirements.txt
+
+      - name: Pytest
+        run: |
+          pip install pytest
+          pytest sre/api/app
+
+      # - name: Integration tests w testcontainers
+      #   run: |
+      #     echo "If there's enough time.."
+
+      - name: Generate tag for image
+        id: generate-tag
+        run: |
+          echo 'tag=$(date "+%Y%m%d")-${{github.run_number}}-$(git rev-parse --short HEAD)' >> $GITHUB_OUTPUT
+
+      - name: Build image
+        run: |
+          docker build -f sre/api/Dockerfile -t ${{steps.generate-tag.tag}} sre/api
+
+      - name: Publish image
+        run: |
+          echo "First set up GCR"
