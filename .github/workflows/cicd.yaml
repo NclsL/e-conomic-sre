@@ -73,8 +73,8 @@ jobs:
 
       - name: Commit files
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "niclas.lamponen@outlook.com"
+          git config --local user.name "Niclas Lamponen[bot]"
           git commit -a -m "Update api tag to ${{steps.generate-tag.outputs.tag}}"
 
       - name: Push changes
