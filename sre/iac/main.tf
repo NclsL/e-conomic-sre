@@ -1,6 +1,5 @@
 terraform {
   required_version = "~>1.9.2"
-  # TODO we probably need k8s provider, too
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -22,4 +21,3 @@ provider "google" {
   project = var.project
   region  = var.region
 }
-

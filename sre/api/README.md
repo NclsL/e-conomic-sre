@@ -18,4 +18,4 @@ Install (mini)conda
 - `pytest ./app`
 
 #### Deployment
-- Commit to sre/api folder master branch
+- Commit to sre/api folder master branch. A workflow will start to run the CICD pipeline. At the end of the pipeline if everything is OK -> pipeline will update the tag of recently built image to sre/cicd.tfvars file. An update to this file will spin up workflows to deploy the recent infrastructure changes.

@@ -118,7 +118,6 @@ resource "kubernetes_service" "default" {
 
     port {
       port = 80
-      # target_port = kubernetes_deployment_v1.default.spec[0].template[0].spec[0].container[0].port[0].name
       target_port = 8000
     }
     type = "NodePort"

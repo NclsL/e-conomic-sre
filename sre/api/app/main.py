@@ -17,7 +17,7 @@ class EndpointLogFilter(logging.Filter):
 
 
 logging.getLogger("uvicorn.access").addFilter(EndpointLogFilter())
-logging.basicConfig(level=logging.INFO)  # Hide logging below debug
+logging.basicConfig(level=logging.INFO)  # Hide logging below info
 
 
 class AllowedMimeTypes(str, Enum):
@@ -26,8 +26,8 @@ class AllowedMimeTypes(str, Enum):
 
 
 @app.get("/health")
-async def healthcheck() -> str:
-    return "200"
+async def healthcheck() -> int:
+    return status.HTTP_200_OK
 
 
 @app.get(
@@ -52,7 +52,7 @@ async def root() -> Response:
     response_class=Response
 )
 async def file(number: int | None = None) -> Response:
-    request = requests.get("http://dummy-pdf-or-png-app-svc:80")
+    request = requests.get("http://dummy-pdf-or-png-app-svc:80", timeout=10)
 
     if request.status_code != status.HTTP_200_OK:
         logging.error(f"Couldn't parse {request}")
