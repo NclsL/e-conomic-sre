@@ -30,17 +30,28 @@ async def healthcheck() -> str:
     return "200"
 
 
-# {number:path} will capture the random ID into the variable 'number'
 @app.get(
-    "/{number:path}",
-    response_description="Returns .pdf or .png depending on the `number`",
+    "/",
+    response_description="200",
+    responses={
+        200: {"description": "Root"}},
+    response_class=Response
+)
+async def root() -> Response:
+    return Response(content="Try supplying a number in the url e.g. /123")
+
+
+# {number will capture the random ID into the variable 'number'
+@app.get(
+    "/{number}",
+    response_description="Returns .pdf or .png",
     responses={
         200: {"description": "An image or pdf from an external service", "content": {"image/png": {}, "application/pdf": {}}},
         500: {"description": "Couldn't fetch data from an external service"},
         501: {"description": "Unable to determine filetype"}},
     response_class=Response
 )
-async def file(number: int) -> Response:
+async def file(number: int | None = None) -> Response:
     request = requests.get("http://localhost:3000")
 
     if request.status_code != status.HTTP_200_OK:
