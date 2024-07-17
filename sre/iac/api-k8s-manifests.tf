@@ -13,15 +13,15 @@ provider "kubernetes" {
 
 resource "kubernetes_deployment_v1" "default" {
   metadata {
-    name = "example-hello-app-deployment"
+    name = "api-deployment"
   }
   spec {
     selector {
-      match_labels = { app = "hello-app" }
+      match_labels = { app = "api-app" }
     }
     template {
       metadata {
-        labels = { app = "hello-app" }
+        labels = { app = "api-app" }
       }
       spec {
         security_context {
@@ -37,11 +37,11 @@ resource "kubernetes_deployment_v1" "default" {
           value    = "amd64"
         }
         container {
-          image = "us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0"
-          name  = "hello-app-container"
+          image = "europe-north1-docker.pkg.dev/sre-hiring-assignment/api-docker-registry/api:${var.deployed-tag}"
+          name  = "api-container"
           port {
-            container_port = 8080
-            name           = "hello-app-svc"
+            container_port = 8000
+            name           = "api-svc"
           }
           security_context {
             allow_privilege_escalation = false
@@ -54,17 +54,21 @@ resource "kubernetes_deployment_v1" "default" {
           }
           liveness_probe {
             http_get {
-              path = "/"
-              port = "hello-app-svc"
-              http_header {
-                name  = "X-Custom-Header"
-                value = "Awesome"
-              }
+              path = "/health"
+              port = 8000
             }
-            initial_delay_seconds = 5
-            period_seconds        = 5
+            initial_delay_seconds = 10
+            period_seconds        = 10
           }
+          readiness_probe {
+            http_get {
+              path = "/health"
+              port = 8000
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
 
+          }
         }
       }
     }
@@ -77,9 +81,33 @@ resource "time_sleep" "wait_service_cleanup" {
 
 }
 
+resource "kubernetes_ingress_v1" "default" {
+  metadata {
+    name = "api-ingress"
+  }
+  spec {
+    rule {
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = kubernetes_service.default.metadata[0].name
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 resource "kubernetes_service" "default" {
   metadata {
-    name = "example-hello-app-lb"
+    name = "api-app-svc"
   }
 
   spec {
@@ -89,10 +117,11 @@ resource "kubernetes_service" "default" {
     ip_family_policy = "RequireDualStack"
 
     port {
-      port        = 80
-      target_port = kubernetes_deployment_v1.default.spec[0].template[0].spec[0].container[0].port[0].name
+      port = 80
+      # target_port = kubernetes_deployment_v1.default.spec[0].template[0].spec[0].container[0].port[0].name
+      target_port = 8000
     }
-    type = "LoadBalancer"
+    type = "NodePort"
   }
 
   depends_on = [time_sleep.wait_service_cleanup]
