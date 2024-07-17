@@ -16,9 +16,12 @@
 - `terraform plan -input=false -var-file=./cicd.tfvars`
 - `terraform apply -input=false -var-file=./cicd.tfvars`
 
+Point kubectl/k9s to the cluster:
+- `gcloud container clusters get-credentials CLUSTER_NAME --region=COMPUTE_REGION`
+
 Since we need dummy -service in GCR; let's do it manually for now. Not something I'm proud of; but we're limited by time!
 - `cd ../dummy-pdf-or-png`
-- `docker build -t europe-north1-docker.pkg.dev/sre-hiring-assignment/api-docker-registry/dummy-pdf-or-png:1.0 .`
+- `docker buildx build --platform linux/amd64 -t europe-north1-docker.pkg.dev/sre-hiring-assignment/api-docker-registry/dummy-pdf-or-png:1.0 .`
 - `gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-north1-docker.pkg.dev`
 - `docker push europe-north1-docker.pkg.dev/sre-hiring-assignment/api-docker-registry/dummy-pdf-or-png:1.0`
 

@@ -52,7 +52,7 @@ async def root() -> Response:
     response_class=Response
 )
 async def file(number: int | None = None) -> Response:
-    request = requests.get("http://localhost:3000")
+    request = requests.get("http://dummy-pdf-or-png-app-svc:3000")
 
     if request.status_code != status.HTTP_200_OK:
         logging.error(f"Couldn't parse {request}")
