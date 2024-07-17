@@ -20,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # These 2 parameters are needed for 'ad-m/github-push-action@v0.8.0' to work correctly
+          # and to re-trigger followup subsequent terraform.yaml
+          # More info: https://github.com/orgs/community/discussions/25702
           fetch-depth: 0
           persist-credentials: false
 
@@ -38,7 +41,7 @@ jobs:
           pip install pytest
           pytest sre/api/app
 
-      # - name: Integration tests w testcontainers
+      # - name: Integration tests w/ testcontainers
       #   run: |
       #     echo "If there's enough time.."
 
@@ -70,7 +73,7 @@ jobs:
         run: docker push europe-north1-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPOSITORY_NAME/$IMAGE_NAME:${{steps.generate-tag.outputs.tag}}
 
       - name: Modify deployment template
-        run: sed -i '/deployed-tag/c\deployed-tag=${{steps.generate-tag.outputs.tag}}' sre/iac/cicd.tfvars
+        run: sed -i '/deployed-tag/c\deployed-tag="${{steps.generate-tag.outputs.tag}}"' sre/iac/cicd.tfvars
 
       - name: Commit files
         run: |

@@ -10,6 +10,7 @@
     - `gcloud beta billing projects describe project-name`
 
 #### Development
+- `gcloud config set project`
 - `gcloud auth application-default login`
 - `terraform init`
 - `terraform plan -input=false -var-file=./cicd.tfvars`
