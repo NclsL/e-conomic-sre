@@ -41,7 +41,7 @@ async def root() -> Response:
     return Response(content="Try supplying a number in the url e.g. /123")
 
 
-# {number will capture the random ID into the variable 'number'
+# {number} will capture the random ID into the variable 'number'
 @app.get(
     "/{number}",
     response_description="Returns .pdf or .png",
