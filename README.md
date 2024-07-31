@@ -13,12 +13,23 @@ Further in `./sre/iac` there are Terraform configurations and k8s manifests. The
     - Deployment
       - For API and dummy-microservice
 
-Right now if you're reading this, the service probably isn't available publicly. I'll spin it up during interview or days prior to it. (At one point I might've forgotten another cluster running for over a month and as a result the GCP credits might have evaporated)
+~Right now if you're reading this, the service probably isn't available publicly. I'll spin it up during interview or days prior to it. (At one point I might've forgotten another cluster running for over a month and as a result the GCP credits might have evaporated)~
 
-- Once deployed, it will be available via IP exposed by the ingress. The following endpoints are available:
-- `/` will remind you to supply an integer in the URL
-- `/[int]` will fetch the dummy pdf or png from the other microservice
-- `/metrics` to expose some prometheus metrics
+I've deployed the cluster, available at http://34.102.239.93. Here's all the stuff I did before interview to deploy it:
+  - First we have to have GCR for the pipelines to work nicely.
+    - `terraform plan -target=google_artifact_registry_repository.api-docker-registry -input=false -var-file=./cicd.tfvars`
+    - `terraform apply -target=google_artifact_registry_repository.api-docker-registry -input=false -var-file=./cicd.tfvars`
+  - Slightly hacky, but the dummy service didn't get CICD with this time limit. Let's authenticate, and push it manually
+    - `gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-north1-docker.pkg.dev`
+    - `docker buildx build --platform linux/amd64 -t europe-north1-docker.pkg.dev/sre-hiring-assignment/api-docker-registry/dummy-pdf-or-png:1.0 .`
+    - `docker push europe-north1-docker.pkg.dev/sre-hiring-assignment/api-docker-registry/dummy-pdf-or-png:1.0`
+  - Created a commit, let the automation handle the rest of the deployment from here on out
+
+About the endpoints:
+  - `/` will remind you to supply an integer in the URL
+  - `/docs` to expose API docs
+  - `/[int]` will fetch the dummy pdf or png from the other microservice
+  - `/metrics` to expose some prometheus metrics
 
 It took me about:
 - 1.5hrs to develop the API microservice, Dockerfile, and github workflows to run and build the container
